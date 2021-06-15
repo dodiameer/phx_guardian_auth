@@ -40,12 +40,13 @@ defmodule MyAppWeb.Auth.Guardian do
     {:ok, user, refresh_token}
   end
 
-  def exchange_refresh_to_pair(refresh_token) do
-    {:ok, {old_token, old_claims}, {new_token, _new_claims}} = exchange(refresh_token, "refresh", "access")
-    revoke_refresh_token(old_token, old_claims)
-    {:ok, user} = resource_from_claims(old_claims)
-    {:ok, _user, new_refresh_token} = create_refresh_token(user, new_token)
-    {:ok, user, new_token, new_refresh_token}
+  def exchange_refresh_to_pair(old_refresh_token) do
+    with {:ok, claims} <- decode_and_verify(old_refresh_token, %{"typ" => "refresh"}) do
+      {:ok} = revoke_refresh_token(old_refresh_token, claims)
+      {:ok, user} = resource_from_claims(claims)
+      {:ok, _user, access_token, refresh_token} = create_token(user)
+      {:ok, user, access_token, refresh_token}
+    end
   end
 
   def revoke_refresh_token(token, claims) do

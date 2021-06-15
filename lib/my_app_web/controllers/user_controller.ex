@@ -34,10 +34,13 @@ defmodule MyAppWeb.UserController do
   end
 
   def refresh(conn, %{"refresh_token" => refresh_token}) do
-    with {:ok, user, new_token, new_refresh_token} <- Guardian.exchange_refresh_to_pair(refresh_token) do
-      conn
-      |> put_status(:ok)
-      |> render("user.json", user: user, token: new_token, refresh_token: new_refresh_token)
+    case Guardian.exchange_refresh_to_pair(refresh_token) do
+      {:ok, user, new_token, new_refresh_token} ->
+        conn
+        |> put_status(:ok)
+        |> render("user.json", user: user, token: new_token, refresh_token: new_refresh_token)
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 end
