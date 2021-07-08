@@ -25,7 +25,7 @@ defmodule MyApp.Accounts.User do
 
   defp put_hashed_password(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
     changeset
-    |> put_change(:encrypted_password, Comeonin.Bcrypt.hashpwsalt(password))
+    |> put_change(:encrypted_password, Comeonin.Pbkdf2.hashpwsalt(password))
   end
 
   defp put_hashed_password(changeset) do

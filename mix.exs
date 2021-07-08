@@ -45,7 +45,7 @@ defmodule MyApp.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:guardian, "~> 2.1"},
       {:comeonin, "~> 4.0"},
-      {:bcrypt_elixir, "~> 1.0"},
+      {:pbkdf2_elixir, "~> 0.12"},
       {:rename, "~> 0.1.0", only: :dev},
       {:guardian_db, "~> 2.0"},
       {:corsica, "~> 1.0"}

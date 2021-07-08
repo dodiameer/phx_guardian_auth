@@ -26,7 +26,7 @@ defmodule MyAppWeb.Auth.Guardian do
   end
 
   defp validate_password(password, encrypted_password) do
-    Comeonin.Bcrypt.checkpw(password, encrypted_password)
+    ComeonIn.Pbkdf2.checkpw(password, encrypted_password)
   end
 
   def create_token(user) do
