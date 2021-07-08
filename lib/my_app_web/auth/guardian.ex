@@ -26,32 +26,31 @@ defmodule MyAppWeb.Auth.Guardian do
   end
 
   defp validate_password(password, encrypted_password) do
-    ComeonIn.Pbkdf2.checkpw(password, encrypted_password)
+    Pbkdf2.verify_pass(password, encrypted_password)
   end
 
   def create_token(user) do
     {:ok, token, _claims} = encode_and_sign(user, %{})
-    {:ok, _user, refresh_token} = create_refresh_token(user, token)
+    {:ok, _user, refresh_token} = create_refresh_token(user)
     {:ok, user, token, refresh_token}
   end
 
-  defp create_refresh_token(user, access_token) do
-    {:ok, refresh_token, _claims} = encode_and_sign(user, %{access_token: access_token}, token_type: "refresh", ttl: {7, :days})
+  defp create_refresh_token(user) do
+    {:ok, refresh_token, _claims} = encode_and_sign(user, %{}, token_type: "refresh", ttl: {7, :days})
     {:ok, user, refresh_token}
   end
 
   def exchange_refresh_to_pair(old_refresh_token) do
     with {:ok, claims} <- decode_and_verify(old_refresh_token, %{"typ" => "refresh"}) do
-      {:ok} = revoke_refresh_token(old_refresh_token, claims)
+      {:ok} = revoke_refresh_token(old_refresh_token)
       {:ok, user} = resource_from_claims(claims)
       {:ok, _user, access_token, refresh_token} = create_token(user)
       {:ok, user, access_token, refresh_token}
     end
   end
 
-  def revoke_refresh_token(token, claims) do
+  def revoke_refresh_token(token) do
     revoke(token)
-    revoke(claims["access_token"])
     {:ok}
   end
 

@@ -3,6 +3,7 @@ defmodule MyAppWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_cookies, signed: ~w(my_app_refresh_token)
   end
 
   pipeline :auth do
